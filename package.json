@@ -1,0 +1,22 @@
+{
+  "name": "visual-keylogger",
+  "version": "0.1.0",
+  "description": "A Visual Keylogger for Coding Streamers",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dandeeccastro/visual-keylogger.git"
+  },
+  "author": "dandeeccastro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dandeeccastro/visual-keylogger/issues"
+  },
+  "homepage": "https://github.com/dandeeccastro/visual-keylogger#readme",
+  "devDependencies": {
+    "electron": "^4.0.5"
+  }
+}
