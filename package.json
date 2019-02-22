@@ -18,5 +18,6 @@
   "homepage": "https://github.com/dandeeccastro/visual-keylogger#readme",
   "devDependencies": {
     "electron": "^4.0.5"
-  }
+  },
+  "dependencies": {}
 }
