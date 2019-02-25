@@ -8,24 +8,34 @@ document.onkeypress = function(e) {
 ok agora vai pq bb pyboy tá funfando
 
 };*/
-const {PythonShell} = require( 'python-shell')
-var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
-var options = {
-    pythonOptions: ['-u']
+let {PythonShell} = require('python-shell')
+var scriptPath = '/home/dundee/Documents/VisualKeyLogger/logger.py'
+var options = { pythonOptions: ['-u'] }
+var pyScript = null
+// ---------------------------------------------------------------------
+function startKeylogger(){
+	pyScript = new PythonShell(scriptPath,options)
+	pyScript.on('message',function(message){
+		console.log(message)
+	})
+	pyScript.end(function(err){
+		if (err == 'KeyboardInterrupt') {
+			console.log('aff mano bom dia')
+		}
+		console.log('Finished w no mistakes')
+	})
 }
-var pyScript = new PythonShell(scriptPath, options)
-pyScript.on('message',function(message){
-    console.log(message)
-})
-pyScript.end(function(err){
-    if (err == 'KeyboardInterrupt') {
-        console.log('aff mano bom dia')
-    }
-    console.log('Finished w no mistakes')
-})
-
-document.onkeypress = function(e){
-    if(e.key == '1'){
-        pyScript.childProcess.kill('SIGINT')
-    }
+// ---------------------------------------------------------------------
+function endKeylogger(){
+	if(pyScript != null){
+		pyScript.childProcess.kill('SIGINT')
+	}
+}
+// ------------------------------------------------------------------
+function switx(){
+	if (document.getElementById('keylogger-switch').checked){
+		startKeylogger()
+	} else {
+		endKeylogger()
+	}
 }
