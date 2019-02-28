@@ -1,0 +1,15 @@
+#keyboard-container {
+	display: none;
+}
+.key-list { 
+	width: 100%;
+}
+.key-list .row {
+	margin: .1em 0 !important;
+}
+.key {
+	border: 1px solid blue;
+	border-radius: 5%;
+	padding: 20px;
+	margin: 0 .25em;
+}
