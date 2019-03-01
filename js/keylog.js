@@ -1,4 +1,5 @@
 let {PythonShell} = require('python-shell')
+//const kb = require('keyboard-layout')
 // TODO: Function to get logger.py location on system
 var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
 var options = { pythonOptions: ['-u'] }
@@ -73,6 +74,9 @@ function startKeylogger(){
 					case "enter":
 						spKey = 'keyboard_return'
 						break
+					case "shift_r":
+						keyDisplayChanger(specialKeys[1])
+						break;
 				}
 				Object.assign(sp.style,{
 					'background-color':"lightblue",
@@ -90,6 +94,7 @@ function startKeylogger(){
  * null check is just to make sure that it doesn't try to kill what is not alive
  */
 function endKeylogger(){
+	spKey = 'not_interested'
 	if(pyScript != null){
 		pyScript.childProcess.kill('SIGINT')
 	}
@@ -127,4 +132,8 @@ function switx(){
 		document.getElementById('keyboard-container').style.display = 'none'
 		document.getElementById('title-container').style.display = 'inline'
 	}
+}
+// ------------------------------------------------------------------
+function keyDisplayChanger(key){
+	console.log(kb.getCurrentKeymap())
 }

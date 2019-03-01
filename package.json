@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/dandeeccastro/visual-keylogger#readme",
   "devDependencies": {
-    "electron": "^4.0.5"
+    "electron": "^4.0.6"
   },
   "dependencies": {
     "python-shell": "^1.0.7"
