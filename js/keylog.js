@@ -5,6 +5,17 @@ var options = { pythonOptions: ['-u'] }
 var pyScript = null
 var spKey = 'F'
 // ---------------------------------------------------------------------
+/* 
+ * This function starts and deals with anything keylogger related. First, it starts the keylogger with python-shell,
+ * and then waits for a message to come from it. If something happens, we have a couple possible outputs
+ *
+ * If a key is "common" (part of the alphabet or usually used in a coding context), it'll find the correspondent key under
+ * the HTMLCollection of items with the class 'key'. Once found, it'll trigger a .1s style change to that key using setTimeout
+ *
+ * If a key is "special" (not part of the alphabet, essencially), it'll go to a switch case to find it's correspondent symbol
+ * in Material Icons. If there's a symbol for that, the 'special key button' (the last key of the HTMLCollection) will pop up 
+ * in .1s, with the style change applied.
+ */
 function startKeylogger(){
 	pyScript = new PythonShell(scriptPath,options)
 	pyScript.on('message',function(message){
@@ -71,6 +82,10 @@ function startKeylogger(){
 	})
 }
 // ---------------------------------------------------------------------
+/* 
+ * This functions kills the keylogger process. Since the switch is switched off at startup, this
+ * null check is just to make sure that it doesn't try to kill what is not alive
+ */
 function endKeylogger(){
 	if(pyScript != null){
 		pyScript.childProcess.kill('SIGINT')
@@ -83,6 +98,9 @@ function endKeylogger(){
 	})
 }
 // ------------------------------------------------------------------
+/*
+ * This function makes style changes to the pressed key
+ */
 function resetter(collection, i){
 	Object.assign(collection[i].style,{
 		'background-color': "white",
@@ -90,6 +108,10 @@ function resetter(collection, i){
 	});
 }
 // ------------------------------------------------------------------
+/* 
+ * This function is specific to keys that aren't common in keyboards, making them
+ * "spawn" with the display change
+ */
 function spResetter(key){
 	Object.assign(key.style,{
 		'display':'none',
@@ -98,6 +120,11 @@ function spResetter(key){
 	})
 }
 // ------------------------------------------------------------------
+
+/* 
+ * This function handles the main switch, enabling and disabling both the visual keyboard
+ * and the keylogger as well
+ */
 function switx(){
 	if (document.getElementById('keylogger-switch').checked){
 		startKeylogger()
