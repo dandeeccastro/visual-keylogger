@@ -3,13 +3,13 @@ let {PythonShell} = require('python-shell')
 var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
 var options = { pythonOptions: ['-u'] }
 var pyScript = null
-var spKey = 'F'
+var spKey = 'not_interested'
 // ---------------------------------------------------------------------
 /* 
  * This function starts and deals with anything keylogger related. First, it starts the keylogger with python-shell,
  * and then waits for a message to come from it. If something happens, we have a couple possible outputs
  *
- * If a key is "common" (part of the alphabet or usually used in a coding context), it'll find the correspondent key under
+ * If a key is "alphabetic" (part of the alphabet or usually used in a coding context), it'll find the correspondent key under
  * the HTMLCollection of items with the class 'key'. Once found, it'll trigger a .1s style change to that key using setTimeout
  *
  * If a key is "special" (not part of the alphabet, essencially), it'll go to a switch case to find it's correspondent symbol
@@ -21,10 +21,7 @@ function startKeylogger(){
 	pyScript.on('message',function(message){
 		var keyCollection = document.getElementsByClassName('key')
 		console.log(message)
-		/* 
-		 * If key is not special, it's first character is a single quote. This is good to avoid 
-		 * unecessary for loops 
-		 */
+		/* ALPHABETIC BEHAVIOUR */
 		if(message[0] == "'"){
 			for(let i = 0; i < keyCollection.length; i++){
 				// pyScript sends key as an array w single quotes and the key, this is a workaround for that
@@ -34,7 +31,7 @@ function startKeylogger(){
 						'color':"white"
 					});	
 					setTimeout( function(){
-						resetter(keyCollection,i)
+						resetter(keyCollection[i])
 					}, 100)
 				} else {
 					console.log('searching')
@@ -42,42 +39,48 @@ function startKeylogger(){
 			}
 		} else {
 			var specialKeys = message.split(".")
-			switch(specialKeys[1]){
-				case "space":
-					spKey = 'space_bar'
-					break
-				case "tab":
-					spKey = 'keyboard_tab'
-					break
-				case "caps_lock":
-					spKey = 'keyboard_capslock'
-					break
-				case "backspace":
-					spKey = 'keyboard_backspace'
-					break
-				case "enter":
-					spKey = 'keyboard_return'
-					break
-				case "up":
-					spKey = 'keyboard_arrow_up'
-					break
-				case "down": 
-					spKey = 'keyboard_arrow_down'
-					break
-				case "left": 
-					spKey = 'keyboard_arrow_left'
-					break
-				case "right":
-					spKey = 'keyboard_arrow_right'
-					break
+			console.log(specialKeys[1])
+			var common = ["up","down","left","right","space"]
+			var commonCollection = document.getElementsByClassName('common')
+			/* COMMON BEHAVIOUR */
+			if (common.includes(specialKeys[1])) {
+				for (let i = 0; i < commonCollection.length; i++){
+					var separated = commonCollection[i].childNodes[0].textContent.split("_")
+					console.log(separated)
+					if(separated.includes(specialKeys[1])){
+						Object.assign(commonCollection[i].style, {
+							'background-color':"lightblue",
+							'color':"white"
+						})
+						setTimeout(function(){
+							resetter(commonCollection[i])
+						}, 100)
+					}
+				}
+			/* SPECIAL BEHAVIOUR */
+			} else {
+				var sp = document.getElementById('sp-key')
+				switch(specialKeys[1]){
+					case "tab":
+						spKey = 'keyboard_tab'
+						break
+					case "caps_lock":
+						spKey = 'keyboard_capslock'
+						break
+					case "backspace":
+						spKey = 'keyboard_backspace'
+						break
+					case "enter":
+						spKey = 'keyboard_return'
+						break
+				}
+				Object.assign(sp.style,{
+					'background-color':"lightblue",
+					'color':"white"
+				})
+				sp.childNodes[0].textContent = spKey
+				setTimeout(function(){ resetter(sp) }, 100)
 			}
-			document.getElementById('sp-key').innerHTML = spKey
-			Object.assign(keyCollection[keyCollection.length - 1].style,{
-				'display':'inline',
-				'background-color':"lightblue",
-				'color':"white"
-			})
-			setTimeout(function(){ spResetter(keyCollection[ keyCollection.length - 1]) }, 100)
 		}
 	})
 }
@@ -98,23 +101,12 @@ function endKeylogger(){
 	})
 }
 // ------------------------------------------------------------------
-/*
- * This function makes style changes to the pressed key
- */
-function resetter(collection, i){
-	Object.assign(collection[i].style,{
-		'background-color': "white",
-		'color':"black"
-	});
-}
-// ------------------------------------------------------------------
 /* 
- * This function is specific to keys that aren't common in keyboards, making them
+ * This function is specific to the special key, making it
  * "spawn" with the display change
  */
-function spResetter(key){
+function resetter(key){
 	Object.assign(key.style,{
-		'display':'none',
 		'background-color': "white",
 		'color':"black"
 	})
