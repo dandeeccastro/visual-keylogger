@@ -1,4 +1,5 @@
 let {PythonShell} = require('python-shell')
+const kb = require('keyboard-layout')
 //const kb = require('keyboard-layout')
 // TODO: Function to get logger.py location on system
 var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
