@@ -1,11 +1,15 @@
+/* FUNDAMENTAL LIBRARY IMPORTS */ 
 let {PythonShell} = require('python-shell')
 const kb = require('keyboard-layout')
-//const kb = require('keyboard-layout')
 // TODO: Function to get logger.py location on system
-var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
+/* GLOBAL VARIABLES */
+const modalList = ['caps_lock','shift','ctrl','alt']
+var scriptPath = '/home/dundee/Documents/VisualKeyLogger/logger.py'
 var options = { pythonOptions: ['-u'] }
 var pyScript = null
 var spKey = 'not_interested'
+var keySet = document.getElementsByClassName('key')
+var modal = []
 // ---------------------------------------------------------------------
 /* 
  * This function starts and deals with anything keylogger related. First, it starts the keylogger with python-shell,
@@ -21,16 +25,15 @@ var spKey = 'not_interested'
 function startKeylogger(){
 	pyScript = new PythonShell(scriptPath,options)
 	pyScript.on('message',function(message){
-		var keyCollection = document.getElementsByClassName('key')
-		console.log(message)
+		var keyCollection = document.getElementsByClassName('alphabetic')
 		/* ALPHABETIC BEHAVIOUR */
 		if(message[0] == "'"){
+			keyDisplayChanger(message[1])
 			for(let i = 0; i < keyCollection.length; i++){
 				// pyScript sends key as an array w single quotes and the key, this is a workaround for that
 				if( keyCollection[i].innerHTML == message[1]){ 
 					Object.assign(keyCollection[i].style,{
-						'background-color':"lightblue",
-						'color':"white"
+						'background-color':"lightblue", 'color':"white"
 					});	
 					setTimeout( function(){
 						resetter(keyCollection[i])
@@ -42,6 +45,7 @@ function startKeylogger(){
 		} else {
 			var specialKeys = message.split(".")
 			console.log(specialKeys[1])
+			keyDisplayChanger(specialKeys[1])
 			var common = ["up","down","left","right","space"]
 			var commonCollection = document.getElementsByClassName('common')
 			/* COMMON BEHAVIOUR */
@@ -136,5 +140,55 @@ function switx(){
 }
 // ------------------------------------------------------------------
 function keyDisplayChanger(key){
+	if (modalList.includes(key)) {
+		console.log('it is a modal') 
+		if(modal.includes(key)){
+			modal.pop()
+		}else{
+			modal.push(key)
+		}
+	}
 	console.log(kb.getCurrentKeymap())
+	var state
+	if (modal.length == 0) {
+		state = 'unmodified'
+	} else if (modal.includes('caps_lock')) {
+		state = 'withCaps'
+	} else if (modal.includes('shift')){
+		state = 'withShift'
+	}
+	console.log(state)
+	/* THIS IS UTTER REDUNDANT GARBAGE, TODO FIX IT */
+	for (let i = 0; i < keySet.length; i++){
+		console.log('EVALUATED KEY: ' + keySet[i].textContent.trim())
+		var other = (keySet[i].textContent.trim() > 1)
+		var currKeyCode = keySet[i].textContent.trim().charCodeAt(0)
+		var digit = (currKeyCode > 47 && currKeyCode < 57)
+		var alphabetic  = (currKeyCode > 96 && currKeyCode < 123)
+		console.log('other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic)
+		if (!other){
+			if (state == 'unmodified'){
+				if (digit){
+					console.log(state)
+					console.log(kb.getCurrentKeymap()['Digit' + keySet[i].textContent.trim()].unmodified)
+				}
+			}
+			else if (state == 'withShift'){
+				if (digit){
+					console.log(state)
+					console.log(kb.getCurrentKeymap()['Digit' + keySet[i].textContent.trim()].withShift)
+				}
+				if (alphabetic){
+					console.log(state)
+					console.log(kb.getCurrentKeymap()['Key' + keySet[i].textContent.trim().toUpperCase()].withShift)
+				}
+			}
+			else if (state == 'withCaps'){
+				if (alphabetic){
+					console.log(state)
+					console.log(kb.getCurrentKeymap()['Key' + keySet[i].textContent.trim().toUpperCase()].withShift)
+				}
+			}
+		}
+	}
 }
