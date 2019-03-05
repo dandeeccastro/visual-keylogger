@@ -2,8 +2,10 @@
 let {PythonShell} = require('python-shell')
 const kb = require('keyboard-layout')
 // TODO: Function to get logger.py location on system
-/* GLOBAL VARIABLES */
+/* CONSTANT VARIABLES */
 const modalList = ['caps_lock','shift','ctrl','alt']
+const common = ["up","down","left","right","space"]
+/* GLOBAL VARIABLES */
 var scriptPath = '/home/dundee/Documents/VisualKeyLogger/logger.py'
 var options = { pythonOptions: ['-u'] }
 var pyScript = null
@@ -28,25 +30,23 @@ function startKeylogger(){
 		var keyCollection = document.getElementsByClassName('alphabetic')
 		/* ALPHABETIC BEHAVIOUR */
 		if(message[0] == "'"){
-			keyDisplayChanger(message[1])
 			for(let i = 0; i < keyCollection.length; i++){
 				// pyScript sends key as an array w single quotes and the key, this is a workaround for that
 				if( keyCollection[i].innerHTML == message[1]){ 
 					Object.assign(keyCollection[i].style,{
-						'background-color':"lightblue", 'color':"white"
+						'background-color':"lightblue", 
+						'color':"white"
 					});	
+					keyDisplayChanger(message[1])
 					setTimeout( function(){
 						resetter(keyCollection[i])
 					}, 100)
-				} else {
-					console.log('searching')
 				}
 			}
 		} else {
 			var specialKeys = message.split(".")
 			console.log(specialKeys[1])
 			keyDisplayChanger(specialKeys[1])
-			var common = ["up","down","left","right","space"]
 			var commonCollection = document.getElementsByClassName('common')
 			/* COMMON BEHAVIOUR */
 			if (common.includes(specialKeys[1])) {
@@ -79,9 +79,6 @@ function startKeylogger(){
 					case "enter":
 						spKey = 'keyboard_return'
 						break
-					case "shift_r":
-						keyDisplayChanger(specialKeys[1])
-						break;
 				}
 				Object.assign(sp.style,{
 					'background-color':"lightblue",
@@ -139,7 +136,23 @@ function switx(){
 	}
 }
 // ------------------------------------------------------------------
+/*
+ * This function changes the keyboard layout based on modal key presses. 
+ * A modal key press is a fancy way of saying Shift, Caps and Alt Gr, and 
+ * this function is called when these keys are pressed to change the key display
+ * accordingly. It does so by using the keyboard-layout package
+ *
+ * In this function you'll find three basic key types: "alphabetic", numeric
+ * and others. Alphabetic and numeric key changes are made by using the following 
+ * patterns from the kb layout module: 
+ *
+ * Key + <uppercase letter>
+ * Digit + <number in question>
+ *
+ *
+ * */
 function keyDisplayChanger(key){
+	/* Setting modal on modal array */ 
 	if (modalList.includes(key)) {
 		console.log('it is a modal') 
 		if(modal.includes(key)){
@@ -148,8 +161,9 @@ function keyDisplayChanger(key){
 			modal.push(key)
 		}
 	}
-	console.log(kb.getCurrentKeymap())
+	console.log(modal)
 	var state
+	/* Setting state based by modal array */
 	if (modal.length == 0) {
 		state = 'unmodified'
 	} else if (modal.includes('caps_lock')) {
@@ -157,38 +171,59 @@ function keyDisplayChanger(key){
 	} else if (modal.includes('shift')){
 		state = 'withShift'
 	}
-	console.log(state)
-	/* THIS IS UTTER REDUNDANT GARBAGE, TODO FIX IT */
+	/* ISSUES WITH THIS SPECIFIC LOOP 
+		- This code is actual spaghetti, it is not optimized and needs to be polished
+		- Code changes content once, never changes back
+	*/
+	console.log('NASTY FOR LOOP START')
 	for (let i = 0; i < keySet.length; i++){
-		console.log('EVALUATED KEY: ' + keySet[i].textContent.trim())
-		var other = (keySet[i].textContent.trim() > 1)
-		var currKeyCode = keySet[i].textContent.trim().charCodeAt(0)
-		var digit = (currKeyCode > 47 && currKeyCode < 57)
-		var alphabetic  = (currKeyCode > 96 && currKeyCode < 123)
-		console.log('other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic)
+		var alphabetic, digit, other
+		var currKeyCode = keySet[i].textContent.charCodeAt(0)
+		digit = (currKeyCode > 47 && currKeyCode < 58)
+		alphabetic  = ((currKeyCode > 96 && currKeyCode < 123) || (currKeyCode > 63 && currKeyCode < 91))
+		other = (keySet[i].textContent.length != 1 || (!digit && !alphabetic))
+		if (other){
+			digit = false
+			alphabetic = false
+		}
+		//console.log('key: ' + keySet[i].textContent + ' other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic)
 		if (!other){
 			if (state == 'unmodified'){
 				if (digit){
 					console.log(state)
-					console.log(kb.getCurrentKeymap()['Digit' + keySet[i].textContent.trim()].unmodified)
+					keySet[i].textContent = kb.getCurrentKeymap()['Digit' + keySet[i].textContent].unmodified
+				}
+				if (alphabetic){
+					console.log(state)
+					keySet[i].textContent = kb.getCurrentKeymap()['Key' + keySet[i].textContent.toUpperCase()].unmodified
 				}
 			}
 			else if (state == 'withShift'){
 				if (digit){
 					console.log(state)
-					console.log(kb.getCurrentKeymap()['Digit' + keySet[i].textContent.trim()].withShift)
+					keySet[i].textContent = kb.getCurrentKeymap()['Digit' + keySet[i].textContent].withShift
 				}
 				if (alphabetic){
 					console.log(state)
-					console.log(kb.getCurrentKeymap()['Key' + keySet[i].textContent.trim().toUpperCase()].withShift)
+					keySet[i].textContent = kb.getCurrentKeymap()['Key' + keySet[i].textContent.toUpperCase()].withShift
 				}
 			}
 			else if (state == 'withCaps'){
 				if (alphabetic){
 					console.log(state)
-					console.log(kb.getCurrentKeymap()['Key' + keySet[i].textContent.trim().toUpperCase()].withShift)
+					keySet[i].textContent = kb.getCurrentKeymap()['Key' + keySet[i].textContent.toUpperCase()].withShift
 				}
 			}
 		}
+		alphabetic = null; digit = null; other = null;
 	}
+	console.log('NASTY FOR LOOP END') 
+}
+function debugKeyset(){
+	console.log('DEBUG START')
+	console.log(keySet.length)
+	for (let i = 0; i < keySet.length; i++){
+		console.log( keySet[i].textContent.length, keySet[i].textContent)
+	}
+	console.log('DEBUG END')
 }
