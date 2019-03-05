@@ -6,11 +6,11 @@ const kb = require('keyboard-layout')
 const modalList = ['caps_lock','shift','ctrl','alt']
 const common = ["up","down","left","right","space"]
 /* GLOBAL VARIABLES */
+var digitAlternates = []
 var scriptPath = '/home/dundee/Documents/VisualKeyLogger/logger.py'
 var options = { pythonOptions: ['-u'] }
 var pyScript = null
 var spKey = 'not_interested'
-var keySet = document.getElementsByClassName('key')
 var modal = []
 // ---------------------------------------------------------------------
 /* 
@@ -152,6 +152,7 @@ function switx(){
  *
  * */
 function keyDisplayChanger(key){
+	var keySet = document.getElementsByClassName('key')
 	/* Setting modal on modal array */ 
 	if (modalList.includes(key)) {
 		console.log('it is a modal') 
@@ -175,18 +176,19 @@ function keyDisplayChanger(key){
 		- This code is actual spaghetti, it is not optimized and needs to be polished
 		- Code changes content once, never changes back
 	*/
+	console.log(digitAlternates)
 	console.log('NASTY FOR LOOP START')
 	for (let i = 0; i < keySet.length; i++){
 		var alphabetic, digit, other
 		var currKeyCode = keySet[i].textContent.charCodeAt(0)
-		digit = (currKeyCode > 47 && currKeyCode < 58)
-		alphabetic  = ((currKeyCode > 96 && currKeyCode < 123) || (currKeyCode > 63 && currKeyCode < 91))
+		digit = ((currKeyCode > 47 && currKeyCode < 58) || digitAlternates.includes(keySet[i]))
+		alphabetic  = ((currKeyCode > 96 && currKeyCode < 123) || (currKeyCode > 64 && currKeyCode < 91))
 		other = (keySet[i].textContent.length != 1 || (!digit && !alphabetic))
 		if (other){
 			digit = false
 			alphabetic = false
 		}
-		//console.log('key: ' + keySet[i].textContent + ' other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic)
+		console.log('key: ' + keySet[i].textContent + ' other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic)
 		if (!other){
 			if (state == 'unmodified'){
 				if (digit){
@@ -219,11 +221,9 @@ function keyDisplayChanger(key){
 	}
 	console.log('NASTY FOR LOOP END') 
 }
-function debugKeyset(){
-	console.log('DEBUG START')
-	console.log(keySet.length)
-	for (let i = 0; i < keySet.length; i++){
-		console.log( keySet[i].textContent.length, keySet[i].textContent)
+function settingDigitAlternates(){
+	for (let i = 0; i < 10; i++){
+		digitAlternates.push(kb.getCurrentKeymap()['Digit' + i].withShift)
 	}
-	console.log('DEBUG END')
 }
+settingDigitAlternates()
