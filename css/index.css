@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+/* FONT FAMILY & COLOR */
+#title-container, li {
+	font-family: 'Raleway',sans-serif;
+	color: #cccccc;
+}
 #keyboard-container {
 	display: none;
 }
@@ -5,15 +11,40 @@
 	width: 100%;
 }
 .key-list .row {
-	margin: .1em 0 !important;
+	margin: .5em 0;
+	justify-content: space-between;
+}
+.row .key{
+	height: 7vw;
 }
 .key, .common {
-	border: 1px solid blue;
-	border-radius: 5%;
+	border: 1px solid lightblue;
+	border-radius: .4em;
 }
 .backspace {
 	margin-top: 2em;
 }
 li {
 	font-size: 1.5em;
+	position: relative;
+	top: -50%;
+}
+i {
+	width: 100%;
+}
+body {
+	background-color: rgb(100,100,100);
+}/*
+#keyboard-container {
+	display: none;
+}*/
+.square:before{
+    content: "";
+    display: block;
+    padding-top: 35%;  /* initial ratio of 1:1*/
+}
+@media only screen and (min-width: 992px){
+	.row .key{
+		height: 5vw;
+	}
 }

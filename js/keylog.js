@@ -35,7 +35,7 @@ function startKeylogger(){
 				if( keyCollection[i].innerHTML == message[1]){ 
 					Object.assign(keyCollection[i].style,{
 						'background-color':"lightblue", 
-						'color':"white"
+						'color':"#cccccc"
 					});	
 					keyDisplayChanger(message[1])
 					setTimeout( function(){
@@ -56,7 +56,7 @@ function startKeylogger(){
 					if(separated.includes(specialKeys[1])){
 						Object.assign(commonCollection[i].style, {
 							'background-color':"lightblue",
-							'color':"white"
+							'color':"#cccccc"
 						})
 						setTimeout(function(){
 							resetter(commonCollection[i])
@@ -82,7 +82,7 @@ function startKeylogger(){
 				}
 				Object.assign(sp.style,{
 					'background-color':"lightblue",
-					'color':"white"
+					'color':"#cccccc"
 				})
 				sp.childNodes[0].textContent = spKey
 				setTimeout(function(){ resetter(sp) }, 100)
@@ -116,8 +116,8 @@ function endKeylogger(){
  */
 function resetter(key){
 	Object.assign(key.style,{
-		'background-color': "white",
-		'color':"black"
+		'background-color': "rgb(100,100,100)",
+		'color':"#cccccc"
 	})
 }
 // ------------------------------------------------------------------
