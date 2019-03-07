@@ -1,13 +1,23 @@
+/**
+ * TODO List for Visual Keylogger:
+ * 
+ * MUST HAVE:
+ * 	- Function to get logger.py's location on system
+ * NICE HAVE:
+ * 	- Key typing speed detection
+ * 	- Blur effect for password/ sensitive data insertion
+ * 
+ */
+
 /* FUNDAMENTAL LIBRARY IMPORTS */ 
 let {PythonShell} = require('python-shell')
 const kb = require('keyboard-layout')
-// TODO: Function to get logger.py location on system
 /* CONSTANT VARIABLES */
 const modalList = ['caps_lock','shift','ctrl','alt']
 const common = ["up","down","left","right","space"]
 /* GLOBAL VARIABLES */
 var digitAlternates = []
-var scriptPath = '/home/turuga/Documents/Shared/Productive/Projects/VisualKeyloggger/logger.py'
+var scriptPath = './logger.py'
 var options = { pythonOptions: ['-u'] }
 var pyScript = null
 var spKey = 'not_interested'
@@ -183,10 +193,6 @@ function keyDisplayChanger(key){
 	} else if (modal.includes('shift')){
 		state = 'withShift'
 	}
-	/* ISSUES WITH THIS SPECIFIC LOOP 
-		- This code is actual spaghetti, it is not optimized and needs to be polished
-		- Code changes content once, never changes back
-	*/
 	for (let i = 0; i < keySet.length; i++){
 		var alphabetic, digit, other, digitAlternate
 		var currKeyCode = keySet[i].textContent.charCodeAt(0)
