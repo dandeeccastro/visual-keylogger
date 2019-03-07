@@ -28,8 +28,12 @@ function startKeylogger(){
 	pyScript = new PythonShell(scriptPath,options)
 	pyScript.on('message',function(message){
 		var keyCollection = document.getElementsByClassName('alphabetic')
+		console.log(message)
 		/* ALPHABETIC BEHAVIOUR */
 		if(message[0] == "'"){
+			if (modal.includes('caps_lock')||modal.includes('shift')){
+				message = message.toUpperCase()
+			}
 			for(let i = 0; i < keyCollection.length; i++){
 				// pyScript sends key as an array w single quotes and the key, this is a workaround for that
 				if( keyCollection[i].innerHTML == message[1]){ 
@@ -52,7 +56,6 @@ function startKeylogger(){
 			if (common.includes(specialKeys[1])) {
 				for (let i = 0; i < commonCollection.length; i++){
 					var separated = commonCollection[i].childNodes[0].textContent.split("_")
-					console.log(separated)
 					if(separated.includes(specialKeys[1])){
 						Object.assign(commonCollection[i].style, {
 							'background-color':"lightblue",
@@ -104,7 +107,6 @@ function endKeylogger(){
 		if (err == 'KeyboardInterrupt') {
 			console.log('aff mano bom dia')
 		}
-		console.log('Finished w no mistakes')
 	})
 }
 // ------------------------------------------------------------------
@@ -165,7 +167,6 @@ function keyDisplayChanger(key){
 	var keySet = document.getElementsByClassName('key')
 	/* Setting modal on modal array */ 
 	if (modalList.includes(key)) {
-		console.log('it is a modal') 
 		if(modal.includes(key)){
 			modal.pop()
 		}else{
@@ -186,8 +187,6 @@ function keyDisplayChanger(key){
 		- This code is actual spaghetti, it is not optimized and needs to be polished
 		- Code changes content once, never changes back
 	*/
-	console.log(digitAlternates)
-	console.log('NASTY FOR LOOP START')
 	for (let i = 0; i < keySet.length; i++){
 		var alphabetic, digit, other, digitAlternate
 		var currKeyCode = keySet[i].textContent.charCodeAt(0)
@@ -208,10 +207,8 @@ function keyDisplayChanger(key){
 		} else if (other){
 			singleKeyChange(state, 'other', keySet[i])
 		}
-		//console.log('key: ' + keySet[i].textContent + ' other: ' + other + ' digit: ' + digit + ' alphabetic: ' + alphabetic + ' digitAlternate: ' + digitAlternate)
 		alphabetic = null; digit = null; other = null;
 	}
-	console.log('NASTY FOR LOOP END') 
 }
 /**
  * This function will use state and keyType to set the correct key change. We use the switch-case
